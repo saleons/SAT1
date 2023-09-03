@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    //refresco de pagina
+    <meta http-equiv="refresh" content="60">
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+
+    <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+    </script>
+
+    <!---ESTILO DE MAPA--->
+    <style>
+                #map_55aeaabb143d98c606755677e0c78bff {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+
+    </style>
+
+    <!---ESTILO--->
+    <style>
+    body, html {
+    height: 100%;
+    margin: 0;
+  }
+  .row {
+    display: flex;
+    height: 100%;
+  }
+  .column {
+    flex: 25%;
+    padding: 5px;
+  }
+  .left-column {
+    flex: 20%;
+    display: flex;
+    flex-direction: column;
+  }
+  .right-column {
+    flex: 75%;
+  }
+  .container {
+    display: flex;
+    max-height: 100px;
+  overflow: auto;
+  }
+
+  .part {
+    flex: 1;
+    text-align: center;
+    border: 1px solid black;
+    margin: 5px;
+  }
+
+  .container1 {
+  max-height: 150px;
+  overflow: auto;
+
+}
+
+  .container1 ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.li {
+        font-family: 'Helvetica Neue', sans-serif;
+        font-size: 5px;
+        color: #333;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+span {
+        color: blue;
+        font-size: 8px;
+    }
+
+</style>
+
+    <!---MENU DESPLEGABLE--->
+    <div class="collapse" id="navbarToggleExternalContent">
+        <div class="bg-dark p-4">
+            <h5 class="text-white h4">Collapsed content</h5>
+            <span class="text-muted">Toggleable via the navbar brand.</span>
+
+            <div class="part">
+                Herramientas
+                <div class="my-2" mx-2>
+
+                    <form th:action="@{/tu-endpoint}" method="post">
+                        <input type="submit" value="Enviar solicitud">
+                    </form>
+
+                    <!--AQUI LLENO LA LISTA DE DEPARTMANETOS_______________________________________________________________________  -->
+
+                    <!--th:field="*{lista}"> ESTO RECUPERA EL OBJETO Q SE SELECIONO  -->
+                    <select class="select-location"  id="select-location" >
+                        <option value="">Seleccione una opción</option>
+                        <option th:each="option : ${lista}"
+                                th:value="${option.nombre}",
+                                th:text="${option.nombre}"></option>
+                    </select>
+
+                    <!--___________________________________________________________________________________________________________  -->
+                    <!--AQUI LLENO LA LISTA DE  CIUDADES_______________________________________________________________________  -->
+                    <select class="select2" id="select2">
+                        <option value="">Seleccione una opción</option>
+
+                    </select>
+                    <!--___________________________________________________________________________________________________________  -->
+
+                    <!--AQUI LLENO LA LISTA DE CATEGORIAS_______________________________________________________________________  -->
+                    <select class="select3" id="select3">
+                        <option value="">Seleccione una opción</option>
+
+                        <option th:each="option : ${listaCategoy}"
+                                th:value="${option.id}",
+                                th:text="${option.nombre}"></option>
+                    </select>
+                    <!--___________________________________________________________________________________________________________  -->
+                    <!--AQUI LLENO LA LISTA DE  CIUDADES_______________________________________________________________________  -->
+                    <select class="select4" id="select4">
+                        <option value="">Seleccione una opción</option>
+
+                    </select>
+                    <!--___________________________________________________________________________________________________________  -->
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
+    <!---LOGO--->
+    <nav class="navbar navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="/images/LOGO.png" alt="" width="30" height="30" class="d-inline-block align-text-top">
+                SISTEMA DE ALERTA TEMPRANA
+                <img src="/images/RepCol.png" alt="" width="160" height="30" class="d-inline-block align-text-top">
+                <img src="/images/UNGRD.png" alt="" width="100" height="30" class="d-inline-block align-text-top">
+                <img src="/images/BELLO.png" alt="" width="100" height="30" class="d-inline-block align-text-top">
+            </a>
+        </div>
+    </nav>
+
+    <!---CONSULTA--->
+        <div class="container">
+
+            <div class="part">Eventos
+                <div class="my-2" mx-2>
+                    <ol class="list-group list-group-numbered">
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">Alertas el dia de hoy</div>
+
+                            </div>
+                            <span class="badge bg-primary rounded-pill">14</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">mensajes enviado</div>
+
+                            </div>
+                            <span class="badge bg-primary rounded-pill">14</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">usuarios</div>
+
+                            </div>
+                            <span class="badge bg-primary rounded-pill">14</span>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+
+
+        <div class="part">Por usuario
+            <div class="my-2" mx-2>
+
+
+                <form th:action="@{/sendMensagueUser}" th:object="${mymodelobject}" method="post">
+                    Elije el tipo de mensaje :
+
+                    <!--AQUI LLENO LA LISTA DE CATEGORIAS_______________________________________________________________________  -->
+                    <select name="marca">
+                        <option value="">Seleccione una opción</option>
+                        <option th:each="option : ${marca}"
+                                th:value="${option.estado}",
+                                th:text="${option.estado}"></option>
+                    </select>
+                    <input name="myid" type="text" th:value="*{myid}" style="width: 350px; height: 30px;">
+
+                    <input id="miInput" name="miInput" type="text" th:value="*{miInput}">
+                    <button type="submit">Enviar</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="part">Todos los usuarios
+            <div class="my-2" mx-2>
+
+                <form th:action="@{/sendMensagueAll}" th:object="${mymodelobject}" method="post">
+                    <!--AQUI LLENO LA LISTA DE CATEGORIAS_______________________________________________________________________  -->
+                    <select name="marca">
+                        <option value="">Seleccione una opción</option>
+                        <option th:each="option : ${marca}"
+                                th:value="${option.estado}",
+                                th:text="${option.estado}"></option>
+                    </select>
+                    <input name="myid" type="text" th:value="*{myid}" style="width: 350px; height: 50px;">
+                    <button type="submit">Enviar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</head>
+<body>
+
+<!---CHATS--->
+<div class="row"  style="height: 460px;">
+    <div class="column left-column">
+
+        <div>MENSAJES ENVIADO A TODOS LOS USUARIOS
+            <div class="card">
+                <div class="container1">
+                    <li th:each="mensaje : ${mensaje}">
+                        <div class="card w-100" style="background-color:  #77B088;">
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${mensaje.tipo}"></h5>
+                                <h5 class="card-title" th:text="${mensaje.mensaje}">mensaje</h5>
+
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+
+        <div>ALERTAS ENVIADAS
+            <div class="card">
+                <div class="container1">
+                    <li th:each="AlertByTime : ${AlertByTime}">
+                    <div class="card w-100" style="background-color:  #D85A5A;">
+                        <div class="card-body">
+                            <div class="card-title" th:text="${AlertByTime.nombre}"></div>
+                            <h5 class="card-title" th:text="${AlertByTime.descripcion}"></h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div>MENSAJES POR USUARIOS
+            <div class="card">
+                <div class="container1">
+                    <li th:each="mensajeuser : ${mensajeuser}">
+                        <div class="card w-100" style="background-color:  #5AA6D8;">
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${mensajeuser.usuarioenvia}"></h5>
+                                <h5 class="card-title" th:text="${mensajeuser.tipo}"></h5>
+                                <div>
+                                    <h5 class="card-title" th:text="${mensajeuser.mensaje}"></h5>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="column right-column">
+        <div class="folium-map" id="map_55aeaabb143d98c606755677e0c78bff"></div>
+    </div>
+</div>
+
+
+</body>
+</html>
+
+<!---TRAIGO DATOS DESDE EL CONTROLADOR--->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var producto1 = /*[[${producto1}]]*/ 'valor por defecto';
+    /*]]>*/
+</script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var findAlertByTimebyHoure = /*[[${findAlertByTimebyHoure}]]*/ 'valor por defecto';
+    /*]]>*/
+</script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var findMessagesNotRespons = /*[[${findMessagesNotRespons}]]*/ 'valor por defecto';
+    /*]]>*/
+</script>
+
+
+
+<!---PROGRMACION DE MAPA--->
+<script>
+
+// ENVIA LAS COORDENADAS AL MAPA Y LO LLEVA A LA UBICAIO__________________________________________________
+  document.getElementById('select4').addEventListener('change', function(e){
+                    let coords = e.target.value.split(",");
+                    map_55aeaabb143d98c606755677e0c78bff.flyTo(coords,13);
+                    })
+
+// ESE CARGA UNA UBICAION POR DEFETO__________________________________________________
+            var map_55aeaabb143d98c606755677e0c78bff = L.map(
+                "map_55aeaabb143d98c606755677e0c78bff",
+                {
+                    center: [6.302352, -75.532623],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 16,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+// SE CRAGA EL MAPA DE OPENSTREET MAP__________________________________________________
+
+            var tile_layer_addafe8bd8bd36973242735f47305518 = L.tileLayer(
+                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "Data by \u0026copy; \u003ca href=\"http://openstreetmap.org\"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eODbL\u003c/a\u003e.", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            ).addTo(map_55aeaabb143d98c606755677e0c78bff);
+
+
+
+
+            var feature_group_46b3488c1943b112ae03fdd7afdaad2b = L.featureGroup(
+                {}
+            ).addTo(map_55aeaabb143d98c606755677e0c78bff);
+
+//COORDENADAS DE LA MARCA DE POSIION__________________________________________________________
+
+
+
+//AGREGADOR DE PUNTOS__________________________________________________TODOS LO USUARIOS
+            // Agregar los marcadores al mapa
+    for (var i = 0; i < producto1.length; i++) {
+        var coordenada = producto1[i];
+
+        // Crear el contenido del popup
+        var contenidoPopup = "<b>Usuario:</b> " + coordenada.nombre + "<br>" ;
+
+        //estilo de marca
+        var myIcon = L.icon({
+        iconUrl: '/images/casa1.png',
+        iconSize: [30, 30],
+        iconAnchor: [10, 20],
+        popupAnchor: [-3, -76],
+
+        });
+
+        // Agregar el marcador con el popup al mapa y al grupo de puntos
+        var marker=L.marker([parseFloat(coordenada.estado), parseFloat(coordenada.fechaModificacion)], {icon: myIcon})
+         .bindPopup(contenidoPopup)
+         .addTo(feature_group_46b3488c1943b112ae03fdd7afdaad2b).on('click', onClick);
+         function onClick(e) {
+         //CUANDO SE LE DA CLICK ENVIA EL CORREO A CONSYLTA
+         document.getElementById('miInput').value = coordenada.nombre;
+         }
+         }
+//__________________________________________________________
+
+//AGREGADOR DE PUNTOS__________________________________________________________USUARIOS CON UN DIA DE ALARMA
+            // Agregar los marcadores al mapa
+    for (var i = 0; i < findAlertByTimebyHoure.length; i++) {
+        var coordenada2 = findAlertByTimebyHoure[i];
+
+        // Crear el contenido del popup
+        var contenidoPopup2 =
+        "<b>Alerta:</b> " + coordenada2.nombre + "<br>" +
+        "<b>Alerta:</b> " + coordenada2.fechaActualizacion + "<br>" +
+                             "<b>Fecha:</b> " + coordenada2.descripcion;
+
+
+        //estilo de marca
+        var myIcon2 = L.icon({
+        iconUrl: '/images/megaphone.png',
+        iconSize: [30, 30],
+        iconAnchor: [10, 40],
+        popupAnchor: [-3, -76],
+
+        });
+
+        // Agregar el marcador con el popup al mapa y al grupo de puntos
+        var marker2=L.marker([parseFloat(coordenada2.estado), parseFloat(coordenada2.fechaModificacion)], {icon: myIcon2} )
+         .bindPopup(contenidoPopup2)
+         .addTo(feature_group_46b3488c1943b112ae03fdd7afdaad2b).on('click', onClick);
+         function onClick(e) {
+         document.getElementById('miInput').value = coordenada2.nombre;
+         }
+         }
+//__________________________________________________________
+
+//AGREGADOR DE PUNTOS__________________________________________________________USUARIOS CON UN DIA DE ALARMA
+            // Agregar los marcadores al mapa
+    for (var i = 0; i < findMessagesNotRespons.length; i++) {
+        var coordenada3 = findMessagesNotRespons[i];
+
+        // Crear el contenido del popup
+        var contenidoPopup3 =
+        "<b>Alerta:</b> " + coordenada3.nombre + "<br>" +
+        "<b>Alerta:</b> " + coordenada3.fechaActualizacion + "<br>" +
+                             "<b>Fecha:</b> " + coordenada3.descripcion;
+
+
+        //estilo de marca
+        var myIcon3 = L.icon({
+        iconUrl: '/images/message.png',
+        iconSize: [30, 30],
+        iconAnchor: [0, 40],
+        popupAnchor: [-3, -76],
+
+        });
+
+        // Agregar el marcador con el popup al mapa y al grupo de puntos
+        var marker3=L.marker([parseFloat(coordenada3.estado), parseFloat(coordenada3.fechaModificacion)], {icon: myIcon3} )
+         .bindPopup(contenidoPopup3)
+         .addTo(feature_group_46b3488c1943b112ae03fdd7afdaad2b).on('click', onClick);
+         function onClick(e) {
+         document.getElementById('miInput').value = coordenada3.nombre;
+         }
+         }
+//__________________________________________________________
+
+
+
+
+
+        var popup_9d74162267613a8640be8a14a54f32d7 = L.popup({"maxWidth": "100%"});
+
+
+            var html_0abbc33747bdc8378b3d3bd830a02cce = $(`<div id="html_0abbc33747bdc8378b3d3bd830a02cce" style="width: 100.0%; height: 100.0%;">estas aqui</div>`)[0];
+            popup_9d74162267613a8640be8a14a54f32d7.setContent(html_0abbc33747bdc8378b3d3bd830a02cce);
+
+
+        marker_6fbbd4bf879b492832bf566f56448518.bindPopup(popup_9d74162267613a8640be8a14a54f32d7)
+        ;
+
+
+
+
+
+
+
+            var layer_control_38f00efbfe8a05705e3e4bb5dc561235 = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_addafe8bd8bd36973242735f47305518,
+                },
+                overlays :  {
+
+                    "vientos" : feature_group_73715e2905321a177d184dc6ca202b62,
+                    "Temperatura" : feature_group_c5f4655bf7a60a22f6702036d4f35dc2,
+                    "precipitation" : feature_group_34fdabf361e19a9980a4794a1277d8b9,
+                    "lago Chinchaicocha" : feature_group_46b3488c1943b112ae03fdd7afdaad2b,
+                },
+            };
+            L.control.layers(
+                layer_control_38f00efbfe8a05705e3e4bb5dc561235.base_layers,
+                layer_control_38f00efbfe8a05705e3e4bb5dc561235.overlays,
+                {"autoZIndex": true, "collapsed": true, "position": "topright"}
+            ).addTo(map_55aeaabb143d98c606755677e0c78bff);
+
+</script>
